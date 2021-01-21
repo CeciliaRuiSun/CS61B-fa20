@@ -12,7 +12,18 @@ public class ArrayDeque<Item> {
     private void resize(int capacity){
         int factor = 4;
         Item[] a = (Item []) new Object[capacity * factor];
-        System.arraycopy(items,0,a,0,size);
+
+        //copy old array to new array BY ORDER
+        //[hdcabegf] -- > [gfhdcabe]
+        int index = 0;
+        for(int i = nextFirst + 1;i < size;i++){
+            a[index] = items[i];
+            index ++;
+        }
+        for(int i = 0; i <= nextFirst;i ++){
+            a[index] = items[i];
+            index ++;
+        }
         nextLast = size;
         nextFirst = size * factor - 1;
         items = a;
@@ -55,9 +66,13 @@ public class ArrayDeque<Item> {
         }
     }
 
-    public void remove(int i){
-
-        items[size - 1] = null;
+    public void removeLast(){
+        if(nextLast > 0) {
+            nextLast--;
+        } else {
+            nextLast = size - 1;
+        }
+        items[nextLast] = null;
         size -= 1;
     }
 
@@ -73,6 +88,6 @@ public class ArrayDeque<Item> {
         arr.addFirst("g");
         arr.addFirst("m");
         arr.addLast("n");
-        System.out.println(arr.get(0));
+        System.out.println(arr.get(2));
     }
 }
