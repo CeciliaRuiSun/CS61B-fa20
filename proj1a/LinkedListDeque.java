@@ -58,16 +58,32 @@ public class LinkedListDeque <Item>{
         size += 1;
     }
 
-    public void removeFirst(){
+    public Item removeFirst(){
+        Item res;
+        if(sentinelHead.next != sentinelTail){
+            res = sentinelHead.next.item;
+        } else{
+            res = null;
+        }
         sentinelHead.next.next.pre = sentinelHead;
         sentinelHead.next = sentinelHead.next.next;
         size -= 1;
+
+        return res;
     }
 
-    public void removeLast(){
+    public Item removeLast(){
+        Item res;
+        if(sentinelTail.pre != sentinelHead){
+            res =  sentinelTail.pre.item;
+        } else{
+            res =  null;
+        }
         sentinelTail.pre.pre.next = sentinelTail;
         sentinelHead.pre = sentinelTail.pre.pre;
         size -= 1;
+
+        return res;
     }
 
     public int size(){
