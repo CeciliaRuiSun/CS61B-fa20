@@ -58,6 +58,18 @@ public class LinkedListDeque <Item>{
         size += 1;
     }
 
+    public void removeFirst(){
+        sentinelHead.next.next.pre = sentinelHead;
+        sentinelHead.next = sentinelHead.next.next;
+        size -= 1;
+    }
+
+    public void removeLast(){
+        sentinelTail.pre.pre.next = sentinelTail;
+        sentinelHead.pre = sentinelTail.pre.pre;
+        size -= 1;
+    }
+
     public int size(){
         return size;
     }
