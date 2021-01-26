@@ -80,7 +80,7 @@ public class LinkedListDeque <Item>{
             res =  null;
         }
         sentinelTail.pre.pre.next = sentinelTail;
-        sentinelHead.pre = sentinelTail.pre.pre;
+        sentinelTail.pre = sentinelTail.pre.pre;
         size -= 1;
 
         return res;
