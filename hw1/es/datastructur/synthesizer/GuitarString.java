@@ -1,5 +1,7 @@
 package es.datastructur.synthesizer;
 
+import java.util.Arrays;
+
 //Note: This file will not compile until you complete task 1 (BoundedQueue).
 public class GuitarString {
     /** Constants. Do not change. In case you're curious, the keyword final
@@ -17,6 +19,9 @@ public class GuitarString {
         //       cast the result of this division operation into an int. For
         //       better accuracy, use the Math.round() function before casting.
         //       Your should initially fill your buffer array with zeros.
+        int capacity = (int) Math.round(SR/frequency);
+        buffer = new ArrayRingBuffer<Double>(capacity);
+
     }
 
 
@@ -46,5 +51,6 @@ public class GuitarString {
         // TODO: Return the correct thing.
         return 0;
     }
+
 }
     // TODO: Remove all comments that say TODO when you're done.
