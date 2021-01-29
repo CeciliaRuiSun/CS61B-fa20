@@ -26,4 +26,17 @@ public class TestArrayRingBuffer {
         assertEquals(2,arb.fillCount());
 
     }
+
+    @Test
+    public void testEquals(){
+        ArrayRingBuffer a = new ArrayRingBuffer(3);
+        ArrayRingBuffer b = new ArrayRingBuffer(3);
+        a.enqueue(1);
+        a.enqueue(2);
+        a.enqueue(3);
+        b.enqueue("1");
+        b.enqueue(2);
+        //b.enqueue(3);
+        assertEquals(false,a.equals(b));
+    }
 }

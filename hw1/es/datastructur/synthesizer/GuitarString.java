@@ -25,6 +25,9 @@ public class GuitarString {
         for(int i = 0;i < capacity;i ++){
             buffer.enqueue(0.0);
         }
+        for (Double item : buffer) {
+            System.out.println(item);
+        }
     }
 
 
