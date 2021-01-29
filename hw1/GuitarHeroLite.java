@@ -27,6 +27,8 @@ public class GuitarHeroLite {
             double sample = stringA.sample() + stringC.sample();
 
         // play the sample on standard audio
+            System.out.println("sample: " + sample);
+
             StdAudio.play(sample);
 
         // advance the simulation of each guitar string by one step
