@@ -92,8 +92,8 @@ public class ArrayRingBuffer<T> implements BoundedQueue<T> {
         return rb[first];
     }
 
-/*    public void bufferPrint(){
-        System.out.print(rb[first + 1]);
+/*    public String toString(){
+        System.out.print("");
     }*/
 
     // TODO: When you get to part 4, implement the needed code to support
