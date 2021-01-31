@@ -58,17 +58,12 @@ public class UnionFind {
 
         if(sizeOf(v1) > sizeOf(v2)){
             //connect v2's root to v1's root
-            System.out.println("before: parent[root1] is " + parent[root1]);
-            System.out.println("before: parent[root2] is " + parent[root2]);
             parent[root1] += parent[root2];
             parent[root2] = root1;
-            System.out.println("after: parent[root1] is " + parent[root1]);
-            System.out.println("after: parent[root2] is " + parent[root2]);
         } else if(sizeOf(v2) >= sizeOf(v1)){
             //connect v1's root to v2's root
             parent[root2] += parent[root1];
             parent[root1] = root2;
-            System.out.println("test----------");
         }
     }
 
