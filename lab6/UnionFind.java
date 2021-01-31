@@ -16,6 +16,9 @@ public class UnionFind {
     /* Throws an exception if v1 is not a valid vertex. */
     private void validate(int v1) {
         // TODO
+        if(v1 < 0 || v1 > parent.length - 1){
+            throw new IllegalArgumentException(" v1 is not valid");
+        }
     }
 
     /* Returns the size of the set v1 belongs to. */
@@ -33,6 +36,9 @@ public class UnionFind {
     /* Returns true if nodes v1 and v2 are connected. */
     public boolean isConnected(int v1, int v2) {
         // TODO
+        if(find(v1) == find(v2)){
+            return true;
+        }
         return false;
     }
 
@@ -43,13 +49,37 @@ public class UnionFind {
        change the sets but may alter the internal structure of the data. */
     public void connect(int v1, int v2) {
         // TODO
+        int root1 = find(v1);
+        int root2 = find(v2);
+
+        if(v1 == v2 || find(v1) == find(v2)){
+            //do nothing
+        }
+
+        if(sizeOf(v1) > sizeOf(v2)){
+            //connect v2's root to v1's root
+            System.out.println("before: parent[root1] is " + parent[root1]);
+            System.out.println("before: parent[root2] is " + parent[root2]);
+            parent[root1] += parent[root2];
+            parent[root2] = root1;
+            System.out.println("after: parent[root1] is " + parent[root1]);
+            System.out.println("after: parent[root2] is " + parent[root2]);
+        } else if(sizeOf(v2) >= sizeOf(v1)){
+            //connect v1's root to v2's root
+            parent[root2] += parent[root1];
+            parent[root1] = root2;
+            System.out.println("test----------");
+        }
     }
 
     /* Returns the root of the set v1 belongs to. Path-compression is employed
        allowing for fast search-time. */
     public int find(int v1) {
         // TODO
-        return -1;
+        if(parent[v1] < 0){
+            return v1;
+        }
+        return find(parent[v1]);
     }
 
 }
