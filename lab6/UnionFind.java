@@ -23,6 +23,7 @@ public class UnionFind {
 
     /* Returns the size of the set v1 belongs to. */
     public int sizeOf(int v1) {
+        validate(v1);
         int root = find(v1);
         return -1 * parent[root];
     }
@@ -49,6 +50,8 @@ public class UnionFind {
        change the sets but may alter the internal structure of the data. */
     public void connect(int v1, int v2) {
         // TODO
+        validate(v1);
+        validate(v2);
         int root1 = find(v1);
         int root2 = find(v2);
 
@@ -71,6 +74,7 @@ public class UnionFind {
        allowing for fast search-time. */
     public int find(int v1) {
         // TODO
+        validate(v1);
         if(parent[v1] < 0){
             return v1;
         }
