@@ -26,7 +26,7 @@ public class GuitarString {
             buffer.enqueue(0.0);
         }
         for (Double item : buffer) {
-            System.out.println(item);
+            System.out.println(item);  //print out what the iterator in ArrayRingBuffer returns, ie. rb[index]
         }
     }
 
