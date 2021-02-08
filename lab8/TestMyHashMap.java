@@ -14,6 +14,8 @@ public class TestMyHashMap {
             MyHashMap<Integer, String> c = new MyHashMap<Integer, String>();
             MyHashMap<Boolean, Integer> e = new MyHashMap<Boolean, Integer>();
         } catch (Exception e) {
+            e.printStackTrace();
+            //System.out.println(e.);
             fail();
         }
     }
