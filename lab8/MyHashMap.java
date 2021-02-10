@@ -1,8 +1,8 @@
 import java.util.*;
 
 public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
-    private int size = 16;            // num of buckets
-    private int num;                  // num of items
+    private int size = 16;            // number of buckets
+    private int num;                  // number of elements
     private double factor = 0.75;        // num/size
     private int resizeFactor = 2;
 
