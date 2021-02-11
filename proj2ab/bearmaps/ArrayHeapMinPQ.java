@@ -7,7 +7,7 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
     private int size = 0;
     private int index;
     private int multiFactor = 2;
-    private MyHashMap<T,Integer> hm;
+    private MyHashMap<T,Integer> hm;    //store item as key, item's index in array as value
 
     public ArrayHeapMinPQ(int n){
         Item = new PriorityNode[n];
@@ -72,20 +72,52 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
         Item[size] = new PriorityNode(item, priority);
         index = size;
         if(index > 0) {
-            swim(index);
+            swimup(index);
         }
         hm.put(item,index);
         size ++;
     }
 
-    public void swim(int k){
+    public void swimup(int k){
         if(Item[parent(k)].compareTo(Item[k]) <= 0){
             return;
         } else {
             swap(k, parent(k));
-            index = parent(k);
-            swim(parent(k));
+            if(hm.containsKey((T) Item[k].item)) {
+                hmReplaceNode((T) Item[k].item, parent(k));
+            } else{
+                index = parent(k);
+            }
+            hmReplaceNode((T)Item[parent(k)].item,k);
+            swimup(parent(k));
         }
+    }
+
+    public void swimdown(int k){
+        int leftchild = 2 * k + 1;
+        if(leftchild < size) {
+            int rightchild = 2 * k + 2;
+            int minchild = 0;
+            if(rightchild < size) {
+                minchild = Math.min(leftchild, rightchild);
+            }else {
+                minchild = leftchild;
+            }
+
+            if (Item[minchild].compareTo(Item[k]) > 0) {
+                return;
+            } else {
+                swap(k, minchild);
+                hmReplaceNode((T) Item[k].item, minchild);
+                hmReplaceNode((T) Item[minchild].item, k);
+                swimdown(minchild);
+            }
+        }
+    }
+
+    public void hmReplaceNode(T key, int newValue){
+        hm.remove(key);
+        hm.put(key,newValue);
     }
 
     public void swap(int k, int parentK){
@@ -126,16 +158,25 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
         Item[getIndex].priority= priority;
 
         /* swim up if get higher priority */
-        if(priority > oldPriority){
-            swim(getIndex);
+        if(priority < oldPriority){
+            swimup(getIndex);
         }
 
         /* swim down if get higher priority */
+        if(priority > oldPriority){
+            swimdown(getIndex);
+        }
 
     }
 
     @Override
     public T removeSmallest(){
+        return null;
+    }
+
+
+
+    public static void main(String[] args){
 
     }
 }
