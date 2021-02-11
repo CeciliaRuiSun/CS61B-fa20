@@ -1,6 +1,8 @@
+package bearmaps;
+
 import java.util.*;
 
-public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
+public class MyHashMap<K extends Comparable<K>, V>{
     private int size = 16;            // number of buckets
     private int num;                  // number of elements
     private double factor = 0.75;        // num/size
@@ -12,9 +14,6 @@ public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         public K key;
         public V value;
         public Node next;
-
-        public Node(){
-        }
 
         public Node(K k, V v){
             key = k;
@@ -35,7 +34,6 @@ public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         factor = loadFactor;
     }
 
-    @Override
     public void clear(){
         for(int i = 0;i < size;i ++){
             buckets[i] = null;
@@ -48,7 +46,6 @@ public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return Math.floorMod(key.hashCode(),size);
     }
 
-    @Override
     public boolean containsKey(K key){
         List<Node> ls = buckets[getLoc(key)];
         if(ls != null) {
@@ -61,7 +58,6 @@ public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return false;
     }
 
-    @Override
     public V get(K key){
         List<Node> ls = buckets[getLoc(key)];
         if(ls != null) {
@@ -76,12 +72,10 @@ public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         }
     }
 
-    @Override
     public int size(){
         return num;
     }
 
-    @Override
     public void put(K key, V value){
         if(num/size >= factor){
             buckets = resize(buckets);
@@ -130,7 +124,6 @@ public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return newBuckets;
     }
 
-    @Override
     public Set<K> keySet(){
         Set<K> keys = new HashSet<>();
         for(int i = 0;i < size;i ++){
@@ -143,7 +136,6 @@ public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return keys;
     }
 
-    @Override
     public V remove(K key){
         if(containsKey(key)) {
             int index = 0;
@@ -158,28 +150,12 @@ public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             Node deleteNode = ls.get(index);
             V value = deleteNode.value;
             ls.remove(deleteNode);
-//            Node deleteNode = ls.get(index);
-//            Node temp = new Node();
-//            V value = deleteNode.value;
-//            System.out.println("deleted key value is: " + value);
-//            while(deleteNode.next != null) {
-//                deleteNode.key = deleteNode.next.key;
-//                deleteNode.value = deleteNode.next.value;
-//                if(deleteNode.next.next == null){
-//                    temp = deleteNode;
-//                }
-//                deleteNode = deleteNode.next;
-//            }
-//            temp.next = null;
             return value;
         }
-
-        return null;
+            return null;
     }
 
-    @Override
     public V remove(K key, V value){
-
         return null;
     }
 
@@ -188,21 +164,24 @@ public class MyHashMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     }
 
     public static void main(String[] args){
-        MyHashMap<String, String> a = new MyHashMap<String, String>();
-        a.put("a","apple");
-        a.put("c","car");
-        a.put("b","beach");
-        a.put("g","goat");
-        a.put("d","deer");
-        a.put("f","flower");
-        a.remove("d");
-        //a.put("hi","flower");
-        System.out.println(a.get("d"));
-        //System.out.println(a.containsKey("hi"));
-        System.out.println(a.keySet());
-       //a.clear();
+//        MyHashMap<String, String> a = new MyHashMap<String, String>();
+//        a.put("a","apple");
+//        a.put("c","car");
+//        a.put("b","beach");
+//        a.put("g","goat");
+//        a.put("d","deer");
+//        a.put("f","flower");
+//        a.put("hi","flower");
+//        System.out.println(a.get("hi"));
+//        System.out.println(a.containsKey("hi"));
+        //a.printInOrder();
+        //a.clear();
         //System.out.println("After clear----");
         //System.out.println(a.get("c"));
 
+        MyHashMap<String, Integer> b = new MyHashMap<String, Integer>();
+        b.put("hi" + 0,1);
+        System.out.println(b.get("hi" + 0));
+        System.out.println(b.containsKey("hi" + 0));
     }
 }

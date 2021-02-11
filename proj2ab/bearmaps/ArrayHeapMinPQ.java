@@ -1,9 +1,13 @@
 package bearmaps;
 
-public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T>{
+import java.util.NoSuchElementException;
+
+public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T>{
     private PriorityNode[] Item;
     private int size = 0;
+    private int index;
     private int multiFactor = 2;
+    private MyHashMap<T,Integer> hm;
 
     public ArrayHeapMinPQ(int n){
         Item = new PriorityNode[n];
@@ -54,27 +58,32 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T>{
 
     @Override
     public void add(T item, double priority){
+        if(contains(item)){
+            throw new IllegalArgumentException("Item already exists");
+        }
+
         /* resize array when reaching maximum number */
-        if(size == Item.length){
+        if(size >= 0.75 * Item.length){
             PriorityNode[] newItem = new PriorityNode[size * multiFactor];
             System.arraycopy(Item,0,newItem,0,Item.length);
             Item = newItem;
         }
 
         Item[size] = new PriorityNode(item, priority);
-        if(size > 0) {
-            swim(size);
+        index = size;
+        if(index > 0) {
+            swim(index);
         }
+        hm.put(item,index);
         size ++;
     }
 
     public void swim(int k){
-        if(k == 0){
+        if(Item[parent(k)].compareTo(Item[k]) <= 0){
             return;
-        }
-
-        if (Item[parent(k)].compareTo(Item[k]) > 0) {
+        } else {
             swap(k, parent(k));
+            index = parent(k);
             swim(parent(k));
         }
     }
@@ -92,12 +101,12 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T>{
 
     @Override
     public boolean contains(T item){
-
+        return hm.containsKey(item);
     }
 
     @Override
     public T getSmallest(){
-
+        return (T) Item[0].getItem();
     }
 
     @Override
@@ -105,8 +114,23 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T>{
         return size;
     }
 
+
     @Override
     public void changePriority(T item, double priority){
+        if(!contains(item)){
+            throw new NoSuchElementException("Item doesn't exist");
+        }
+
+        int getIndex = hm.get(item);
+        double oldPriority = Item[getIndex].priority;
+        Item[getIndex].priority= priority;
+
+        /* swim up if get higher priority */
+        if(priority > oldPriority){
+            swim(getIndex);
+        }
+
+        /* swim down if get higher priority */
 
     }
 
