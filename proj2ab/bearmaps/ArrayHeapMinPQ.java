@@ -1,5 +1,9 @@
 package bearmaps;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T>{
@@ -11,6 +15,7 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
 
     public ArrayHeapMinPQ(int n){
         Item = new PriorityNode[n];
+        hm = new MyHashMap<>();
     }
 
     /**  Node of heap
@@ -20,6 +25,9 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
         public T item;
         public double priority;
 
+        public String toString() {
+            return "" + item + ":" + priority;
+        }
         PriorityNode(T e, double p) {
             this.item = e;
             this.priority = p;
@@ -78,11 +86,11 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
         size ++;
     }
 
-    public void swimup(int k){
+    private void swimup(int k){
         if(Item[parent(k)].compareTo(Item[k]) <= 0){
             return;
         } else {
-            swap(k, parent(k));
+            swapNode(k, parent(k));
             if(hm.containsKey((T) Item[k].item)) {
                 hmReplaceNode((T) Item[k].item, parent(k));
             } else{
@@ -93,7 +101,7 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
         }
     }
 
-    public void swimdown(int k){
+    private void swimdown(int k){
         int leftchild = 2 * k + 1;
         if(leftchild < size) {
             int rightchild = 2 * k + 2;
@@ -104,10 +112,15 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
                 minchild = leftchild;
             }
 
+//            System.out.println("k is " + k);
+//            System.out.println("leftchild is " + leftchild);
+//            System.out.println("rightchild is " + rightchild);
+//            System.out.println("minchild is " + minchild);
+
             if (Item[minchild].compareTo(Item[k]) > 0) {
                 return;
             } else {
-                swap(k, minchild);
+                swapNode(k, minchild);
                 hmReplaceNode((T) Item[k].item, minchild);
                 hmReplaceNode((T) Item[minchild].item, k);
                 swimdown(minchild);
@@ -115,18 +128,18 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
         }
     }
 
-    public void hmReplaceNode(T key, int newValue){
+    private void hmReplaceNode(T key, int newValue){
         hm.remove(key);
         hm.put(key,newValue);
     }
 
-    public void swap(int k, int parentK){
+    private void swapNode(int k, int parentK){
         PriorityNode temp = Item[k];
         Item[k] = Item[parentK];
         Item[parentK] = temp;
     }
 
-    public int parent(int k) {
+    private int parent(int k) {
         return (k - 1) / 2;
     }
 
@@ -156,10 +169,14 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
         int getIndex = hm.get(item);
         double oldPriority = Item[getIndex].priority;
         Item[getIndex].priority= priority;
+        System.out.println("getIndex is " + getIndex);
+
 
         /* swim up if get higher priority */
         if(priority < oldPriority){
+            System.out.println("before: h's index "+hm.get((T)Item[7].item));
             swimup(getIndex);
+            System.out.println("after: h's index "+hm.get((T)Item[7].item));
         }
 
         /* swim down if get higher priority */
@@ -171,12 +188,29 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
 
     @Override
     public T removeSmallest(){
-        return null;
+        Item[0] = Item[size - 1];
+        Item[size - 1] = null;
+        size --;
+        swimdown(0);
+
+        if(size > 0) {
+            return (T) Item[0].item;
+        } else {
+            return null;
+        }
+    }
+
+    public void print(){
+        System.out.println("Print, size:"+size);
+        ArrayList<Object> ls = new ArrayList<>();
+        ls.add("");
+        for(int i = 0;i < size;i++){
+            //System.out.println("  Add: "+Item[i].toString());
+            ls.add(Item[i].toString());
+        }
+        PrintHeapDemo printtest = new PrintHeapDemo();
+        printtest.printFancyHeapDrawing(ls.toArray());
     }
 
 
-
-    public static void main(String[] args){
-
-    }
 }

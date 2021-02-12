@@ -41,7 +41,7 @@ public class MyHashMap<K extends Comparable<K>, V>{
         num = 0;
     }
 
-    public int getLoc(K key){
+    private int getLoc(K key){
         /* get index of which bucket key should be in */
         return Math.floorMod(key.hashCode(),size);
     }
