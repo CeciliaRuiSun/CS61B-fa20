@@ -7,6 +7,13 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T>{
+    /**
+     * Array <-- Node <-- item, priority
+     * Hashmap <-- key: item, value: item's index in array
+     *
+     * an easier way: let both array and hashmap point to nodes, i.e. hashmap store node's address
+     */
+
     private PriorityNode[] Item;
     private int size = 0;
     private int index;
@@ -90,13 +97,15 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
         if(Item[parent(k)].compareTo(Item[k]) <= 0){
             return;
         } else {
-            swapNode(k, parent(k));
             if(hm.containsKey((T) Item[k].item)) {
+                System.out.println("k is " + k);
+                System.out.println("parent(k) is " + parent(k));
                 hmReplaceNode((T) Item[k].item, parent(k));
             } else{
                 index = parent(k);
             }
             hmReplaceNode((T)Item[parent(k)].item,k);
+            swapNode(k, parent(k));
             swimup(parent(k));
         }
     }
@@ -112,17 +121,12 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
                 minchild = leftchild;
             }
 
-//            System.out.println("k is " + k);
-//            System.out.println("leftchild is " + leftchild);
-//            System.out.println("rightchild is " + rightchild);
-//            System.out.println("minchild is " + minchild);
-
             if (Item[minchild].compareTo(Item[k]) > 0) {
                 return;
             } else {
-                swapNode(k, minchild);
                 hmReplaceNode((T) Item[k].item, minchild);
                 hmReplaceNode((T) Item[minchild].item, k);
+                swapNode(k, minchild);
                 swimdown(minchild);
             }
         }
@@ -169,14 +173,10 @@ public class ArrayHeapMinPQ<T extends Comparable<T>> implements ExtrinsicMinPQ<T
         int getIndex = hm.get(item);
         double oldPriority = Item[getIndex].priority;
         Item[getIndex].priority= priority;
-        System.out.println("getIndex is " + getIndex);
-
 
         /* swim up if get higher priority */
         if(priority < oldPriority){
-            System.out.println("before: h's index "+hm.get((T)Item[7].item));
             swimup(getIndex);
-            System.out.println("after: h's index "+hm.get((T)Item[7].item));
         }
 
         /* swim down if get higher priority */
