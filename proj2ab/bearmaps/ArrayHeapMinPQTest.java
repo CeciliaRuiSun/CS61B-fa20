@@ -32,12 +32,18 @@ public class ArrayHeapMinPQTest {
     @Test
     public void testMassAdd(){
         ArrayHeapMinPQ b = new ArrayHeapMinPQ(10);
-        for (int i = 0; i < 455; i++) {
+
+       long before = System.currentTimeMillis();
+        for (int i = 0; i < 100000; i++) {
             b.add("hi" + i, i);
             assertEquals(i+1,b.size());
             assertTrue(b.contains("hi" + i));
         }
+
+        long after = System.currentTimeMillis();
+        System.out.println("time used is: " + (after - before));
     }
+
 
     @Test
     public void testSize(){
