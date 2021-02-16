@@ -2,7 +2,7 @@ package bearmaps.proj2c.wordladderpuzzle;
 
 import bearmaps.proj2c.AStarGraph;
 import bearmaps.proj2c.WeightedEdge;
-import edu.princeton.cs.introcs.In;
+import edu.princeton.cs.algs4.In;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class WordGraph implements AStarGraph<String> {
     private Set<String> words;
-    private static final String WORDFILE = "words10000.txt";
+    private static final String WORDFILE = "bearmaps/proj2c/input/words10000.txt";
 
     /**
      * Reads the wordfile specified by the wordfile variable.
