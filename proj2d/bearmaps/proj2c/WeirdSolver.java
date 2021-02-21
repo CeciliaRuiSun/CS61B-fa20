@@ -2,7 +2,7 @@ package bearmaps.proj2c;
 
 import bearmaps.proj2ab.DoubleMapPQ;
 import bearmaps.proj2ab.ExtrinsicMinPQ;
-import edu.princeton.cs.introcs.Stopwatch;
+import edu.princeton.cs.algs4.Stopwatch;
 
 import java.util.*;
 

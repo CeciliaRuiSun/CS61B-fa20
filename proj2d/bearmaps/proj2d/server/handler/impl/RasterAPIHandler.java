@@ -26,6 +26,12 @@ import static bearmaps.proj2d.utils.Constants.ROUTE_LIST;
  * @author rahul, Josh Hug, _________
  */
 public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<String, Object>> {
+    private static final double rootTopLon = Constants.ROOT_ULLON;
+    private static final double rootTopLat = Constants.ROOT_ULLAT;
+    private static final double rootBotLon = Constants.ROOT_LRLON;
+    private static final double rootBotLat = Constants.ROOT_LRLAT;
+    private static final int rootTileSize = Constants.TILE_SIZE;  //256
+    private static final double lonDPPDep0 = (rootTopLon - rootBotLon) / rootTileSize;
 
     /**
      * Each raster request to the server will have the following parameters
@@ -87,9 +93,53 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
         //System.out.println("yo, wanna know the parameters given by the web browser? They are:");
         //System.out.println(requestParams);
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented RasterAPIHandler.processRequest, nothing is displayed in "
-                + "your browser.");
+        double reqTopLon = requestParams.get("ullon");
+        double reqTopLat = requestParams.get("ullat");
+        double reqBotLon = requestParams.get("lrlon");
+        double reqBotLat = requestParams.get("lrlat");
+        double width = requestParams.get("w");
+        double height = requestParams.get("h");
+
+        /* out of border error*/
+        if(reqTopLon < rootTopLon || reqTopLat > rootTopLat ||
+                reqBotLon > rootBotLon || reqBotLat < rootTopLat){
+            throw new IndexOutOfBoundsException("Request out of bounds");
+        }
+
+        /* calculate depth */
+        double reqLonDPP = (reqTopLon - reqBotLon) / width;   //???
+
+        int depth = getDepth(reqLonDPP);
+        /* calculate bounding box and # of tiles */
+        double unitLon = (rootTopLon - rootBotLon)/Math.pow(2,depth);
+        int xbegin = 0, xend = 0, ybegin = 0, yend = 0;
+        for(int i = 0;;i++){
+            if(rootTopLon + unitLon * i > reqLonDPP){
+                xbegin = i;
+                break;
+            }
+        }
+
+
+
         return results;
+    }
+
+    private int getDepth(double reqLonDPP){
+        int depth = 0;
+        for(int i = 0;;i ++){
+            double temp = lonDPPDep0 / Math.pow(2,i);
+            if(temp < reqLonDPP){
+                depth = i;
+                break;
+            }
+
+            if(i == 7){
+                depth = i;
+                break;
+            }
+        }
+        return depth;
     }
 
     @Override
