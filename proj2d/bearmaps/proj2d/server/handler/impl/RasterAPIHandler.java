@@ -12,10 +12,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 import static bearmaps.proj2d.utils.Constants.SEMANTIC_STREET_GRAPH;
 import static bearmaps.proj2d.utils.Constants.ROUTE_LIST;
@@ -32,6 +30,7 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
     private static final double rootBotLat = Constants.ROOT_LRLAT;
     private static final int rootTileSize = Constants.TILE_SIZE;  //256
     private static final double lonDPPDep0 = (rootTopLon - rootBotLon) / rootTileSize;
+
 
     /**
      * Each raster request to the server will have the following parameters
@@ -51,6 +50,9 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
     private static final String[] REQUIRED_RASTER_RESULT_PARAMS = {"render_grid", "raster_ul_lon",
             "raster_ul_lat", "raster_lr_lon", "raster_lr_lat", "depth", "query_success"};
 
+    public RasterAPIHandler(){
+
+    }
 
     @Override
     protected Map<String, Double> parseRequestParams(Request request) {
@@ -99,29 +101,51 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
         double reqBotLat = requestParams.get("lrlat");
         double width = requestParams.get("w");
         double height = requestParams.get("h");
+        boolean query_success = false;
 
-        /* out of border error*/
-        if(reqTopLon < rootTopLon || reqTopLat > rootTopLat ||
-                reqBotLon > rootBotLon || reqBotLat < rootTopLat){
-            throw new IndexOutOfBoundsException("Request out of bounds");
-        }
+        /* corner cases: No Coverage */
+        if(reqTopLon > reqBotLon || reqTopLat < reqBotLat ||
+                reqTopLon > rootBotLon || reqBotLon < rootTopLon ||
+                reqBotLat > rootTopLat || reqTopLat < rootBotLat){
+            results = queryFail();
+        } else {
 
-        /* calculate depth */
-        double reqLonDPP = (reqTopLon - reqBotLon) / width;   //???
+            /* calculate depth */
+            double reqLonDPP = (reqTopLon - reqBotLon) / width;
+            int depth = getDepth(reqLonDPP);
 
-        int depth = getDepth(reqLonDPP);
-        /* calculate bounding box and # of tiles */
-        double unitLon = (rootTopLon - rootBotLon)/Math.pow(2,depth);
-        int xbegin = 0, xend = 0, ybegin = 0, yend = 0;
-        for(int i = 0;;i++){
-            if(rootTopLon + unitLon * i > reqLonDPP){
-                xbegin = i;
-                break;
+            /* calculate bounding box and # of tiles */
+            double unitLon = Math.abs((rootTopLon - rootBotLon) / Math.pow(2, depth));
+            double unitLat = Math.abs((rootTopLat - rootBotLat) / Math.pow(2, depth));
+            int xbegin = getIndX(rootTopLon, unitLon, reqLonDPP);
+            int xend = getIndX(rootTopLon, unitLon, reqBotLon);
+            int ybegin = getIndY(rootTopLat, unitLat, reqTopLat);
+            int yend = getIndY(rootTopLat, unitLat, reqBotLat);
+
+            /* return results */
+            double raster_ul_lon = rootTopLon + xbegin * unitLon;
+            double raster_ul_lat = rootTopLat - ybegin * unitLat;
+            double raster_lr_lon = rootTopLon + xend * unitLon;
+            double raster_lr_lat = rootTopLat - yend * unitLat;
+            query_success = true;
+            int num_r = yend - ybegin + 1;
+            int num_c = xend - xbegin + 1;
+            String[][] render_grid = new String[num_r][num_c];
+            for (int i = 0; i < num_r; i++) {
+                for (int j = 0; j < num_c; j++) {
+                    render_grid[i][j] = "d" + depth + "_x" + (xbegin + j) +
+                            "_y" + (ybegin + i) + ".png";           //d7_x84_y28.png
+                }
             }
+
+            results.put("raster_ul_lon", raster_ul_lon);
+            results.put("depth", depth);
+            results.put("raster_lr_lon", raster_lr_lon);
+            results.put("raster_lr_lat", raster_lr_lat);
+            results.put("raster_ul_lat", raster_ul_lat);
+            results.put("query_success", query_success);
+            results.put("render_grid", render_grid);
         }
-
-
-
         return results;
     }
 
@@ -140,6 +164,35 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
             }
         }
         return depth;
+    }
+
+    /* get x and y */
+    private int getIndX(double start, double unitLon, double goal){
+        int index = 0;
+        if(goal < start){
+            return 0;
+        }
+        while(start + unitLon * (index + 1) < rootBotLon){
+            if(start + unitLon * (index + 1) > goal){
+                break;
+            }
+            index ++;
+        }
+        return index;
+    }
+
+    private int getIndY(double start, double unitLat, double goal){
+        int index = 0;
+        if(goal > start){
+            return 0;
+        }
+        while(start - unitLat * (index + 1) > rootBotLat){
+            if(start - unitLat * (index + 1) < goal){
+                break;
+            }
+            index ++;
+        }
+        return index;
     }
 
     @Override
