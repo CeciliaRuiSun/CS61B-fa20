@@ -28,6 +28,10 @@ public class TestRasterAPIHandler {
     private static final String RESULTS_FILE = "../library-fa20/data/proj2d_test_inputs/raster_results.txt";
     private static final int NUM_TESTS = 8;
     private static RasterAPIHandler rasterer;
+    private static final int NUM_CORNER_TESTS = 1;
+    private static final String CORNER_PARAMS_FILE = "../library-fa20/data/proj2d_test_inputs/corner_raster_params.txt";
+    private static final String CORNER_RESULTS_FILE = "../library-fa20/data/proj2d_test_inputs/corner_raster_results.txt";
+
 
 
     @Before
@@ -37,8 +41,8 @@ public class TestRasterAPIHandler {
 
     @Test
     public void testProcessRequests() throws Exception {
-        List<Map<String, Double>> testParams = paramsFromFile();
-        List<Map<String, Object>> expectedResults = resultsFromFile();
+        List<Map<String, Double>> testParams = paramsFromFile(PARAMS_FILE, NUM_TESTS);
+        List<Map<String, Object>> expectedResults = resultsFromFile(RESULTS_FILE, NUM_TESTS);
 
         for (int i = 0; i < NUM_TESTS; i++) {
             System.out.println(String.format("Running test: %d", i));
@@ -51,11 +55,29 @@ public class TestRasterAPIHandler {
         }
     }
 
-    private List<Map<String, Double>> paramsFromFile() throws Exception {
-        List<String> lines = Files.readAllLines(Paths.get(PARAMS_FILE), Charset.defaultCharset());
+    @Test
+    public void testCornerProcessRequests() throws Exception {
+        List<Map<String, Double>> testParams = paramsFromFile(CORNER_PARAMS_FILE, NUM_CORNER_TESTS);
+        List<Map<String, Object>> expectedResults = resultsFromFile(CORNER_RESULTS_FILE, NUM_CORNER_TESTS);
+
+        for (int i = 0; i < NUM_CORNER_TESTS; i++) {
+            System.out.println(String.format("Running test: %d", i));
+            Map<String, Double> params = testParams.get(i);
+            Map<String, Object> actual = rasterer.processRequest(params, null);
+            Map<String, Object> expected = expectedResults.get(i);
+            String msg = "Your results did not match the expected results for input "
+                    + mapToString(params) + ".\n";
+            System.out.println("actual: " + actual.toString());
+            System.out.println("expected: " + expected.toString());
+            checkParamsMap(msg, expected, actual);
+        }
+    }
+
+    private List<Map<String, Double>> paramsFromFile(String file_path, int num_tests) throws Exception {
+        List<String> lines = Files.readAllLines(Paths.get(file_path), Charset.defaultCharset());
         List<Map<String, Double>> testParams = new ArrayList<>();
         int lineIdx = 2; // ignore comment lines
-        for (int i = 0; i < NUM_TESTS; i++) {
+        for (int i = 0; i < num_tests; i++) {
             Map<String, Double> params = new HashMap<>();
             params.put("ullon", Double.parseDouble(lines.get(lineIdx)));
             params.put("ullat", Double.parseDouble(lines.get(lineIdx + 1)));
@@ -69,11 +91,11 @@ public class TestRasterAPIHandler {
         return testParams;
     }
 
-    private List<Map<String, Object>> resultsFromFile() throws Exception {
-        List<String> lines = Files.readAllLines(Paths.get(RESULTS_FILE), Charset.defaultCharset());
+    private List<Map<String, Object>> resultsFromFile(String file_path, int num_tests) throws Exception {
+        List<String> lines = Files.readAllLines(Paths.get(file_path), Charset.defaultCharset());
         List<Map<String, Object>> expected = new ArrayList<>();
         int lineIdx = 4; // ignore comment lines
-        for (int i = 0; i < NUM_TESTS; i++) {
+        for (int i = 0; i < num_tests; i++) {
             Map<String, Object> results = new HashMap<>();
             results.put("raster_ul_lon", Double.parseDouble(lines.get(lineIdx)));
             results.put("raster_ul_lat", Double.parseDouble(lines.get(lineIdx + 1)));

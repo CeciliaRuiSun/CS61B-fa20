@@ -29,7 +29,7 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
     private static final double rootBotLon = Constants.ROOT_LRLON;
     private static final double rootBotLat = Constants.ROOT_LRLAT;
     private static final int rootTileSize = Constants.TILE_SIZE;  //256
-    private static final double lonDPPDep0 = (rootTopLon - rootBotLon) / rootTileSize;
+    private static final double lonDPPDep0 = Math.abs(rootTopLon - rootBotLon) / rootTileSize;
 
 
     /**
@@ -92,13 +92,13 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
      */
     @Override
     public Map<String, Object> processRequest(Map<String, Double> requestParams, Response response) {
-        //System.out.println("yo, wanna know the parameters given by the web browser? They are:");
-        //System.out.println(requestParams);
+        System.out.println("yo, wanna know the parameters given by the web browser? They are:");
+        System.out.println(requestParams);
         Map<String, Object> results = new HashMap<>();
-        double reqTopLon = requestParams.get("ullon");
-        double reqTopLat = requestParams.get("ullat");
-        double reqBotLon = requestParams.get("lrlon");
-        double reqBotLat = requestParams.get("lrlat");
+        double reqTopLon = Math.max(requestParams.get("ullon"),rootTopLon);
+        double reqTopLat = Math.min(requestParams.get("ullat"),rootTopLat);
+        double reqBotLon = Math.min(requestParams.get("lrlon"),rootBotLon);
+        double reqBotLat = Math.max(requestParams.get("lrlat"),rootBotLat);
         double width = requestParams.get("w");
         double height = requestParams.get("h");
         boolean query_success = false;
@@ -111,13 +111,13 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
         } else {
 
             /* calculate depth */
-            double reqLonDPP = (reqTopLon - reqBotLon) / width;
+            double reqLonDPP = Math.abs(reqTopLon - reqBotLon) / width;
             int depth = getDepth(reqLonDPP);
 
             /* calculate bounding box and # of tiles */
             double unitLon = Math.abs((rootTopLon - rootBotLon) / Math.pow(2, depth));
             double unitLat = Math.abs((rootTopLat - rootBotLat) / Math.pow(2, depth));
-            int xbegin = getIndX(rootTopLon, unitLon, reqLonDPP);
+            int xbegin = getIndX(rootTopLon, unitLon, reqTopLon);
             int xend = getIndX(rootTopLon, unitLon, reqBotLon);
             int ybegin = getIndY(rootTopLat, unitLat, reqTopLat);
             int yend = getIndY(rootTopLat, unitLat, reqBotLat);
@@ -125,18 +125,23 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
             /* return results */
             double raster_ul_lon = rootTopLon + xbegin * unitLon;
             double raster_ul_lat = rootTopLat - ybegin * unitLat;
-            double raster_lr_lon = rootTopLon + xend * unitLon;
-            double raster_lr_lat = rootTopLat - yend * unitLat;
+            double raster_lr_lon = rootTopLon + (xend+1) * unitLon;
+            double raster_lr_lat = rootTopLat - (yend+1) * unitLat;
             query_success = true;
             int num_r = yend - ybegin + 1;
+            //System.out.println("num_r: " + num_r + " yend: " + yend + " ybegin: " + ybegin);
             int num_c = xend - xbegin + 1;
+            //System.out.println("num_c: " + num_c + " xend: " + xend + " xbegin: " + xbegin);
             String[][] render_grid = new String[num_r][num_c];
             for (int i = 0; i < num_r; i++) {
                 for (int j = 0; j < num_c; j++) {
                     render_grid[i][j] = "d" + depth + "_x" + (xbegin + j) +
                             "_y" + (ybegin + i) + ".png";           //d7_x84_y28.png
+                    //System.out.println("x: " + (xbegin + j) + " y: " + (ybegin + i));
                 }
+
             }
+
 
             results.put("raster_ul_lon", raster_ul_lon);
             results.put("depth", depth);
@@ -146,10 +151,13 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
             results.put("query_success", query_success);
             results.put("render_grid", render_grid);
         }
+
+        //System.out.println("results: " + results.toString());
         return results;
     }
 
     private int getDepth(double reqLonDPP){
+        System.out.println("reqDPP: " + reqLonDPP);
         int depth = 0;
         for(int i = 0;;i ++){
             double temp = lonDPPDep0 / Math.pow(2,i);
@@ -163,6 +171,7 @@ public class RasterAPIHandler extends APIRouteHandler<Map<String, Double>, Map<S
                 break;
             }
         }
+        System.out.println("Depth: " + depth);
         return depth;
     }
 
