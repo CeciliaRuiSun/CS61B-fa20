@@ -27,18 +27,57 @@ public class HexWorld {
             }
         }
 
+        int x1 = WIDTH / 2 - 1;
+        int y1 = HEIGHT - 6;
+        int s = 3;
+        // middle
+        addHexagon(world, x1,y1,s, Tileset.TREE);
+        addHexagon(world, x1,y1 - 2*s,s, Tileset.MOUNTAIN);
+        addHexagon(world, x1,y1 - 4*s,s, Tileset.MOUNTAIN);
+        addHexagon(world, x1,y1 - 6*s,s, Tileset.MOUNTAIN);
+        addHexagon(world, x1,y1 - 8*s,s, Tileset.MOUNTAIN);
+
+        // middle left 1
+        addHexagon(world, x1 - (2*s - 1),y1 - s,s, Tileset.GRASS);
+        addHexagon(world, x1 - (2*s - 1),y1 - 3*s,s, Tileset.MOUNTAIN);
+        addHexagon(world, x1 - (2*s - 1),y1 - 5*s,s, Tileset.MOUNTAIN);
+        addHexagon(world, x1 - (2*s - 1),y1 - 7*s,s, Tileset.FLOWER);
+
+        // middle right 1
+        addHexagon(world, x1 + 2*s - 1,y1 - s,s, Tileset.FLOWER);
+        addHexagon(world, x1 + 2*s - 1,y1 - 3*s,s, Tileset.SAND);
+        addHexagon(world, x1 + 2*s - 1,y1 - 5*s,s, Tileset.TREE);
+        addHexagon(world, x1 + 2*s - 1,y1 - 7*s,s, Tileset.MOUNTAIN);
+
+        // middle left 2
+        addHexagon(world, x1 - 2*(2*s - 1),y1 - 2*s,s, Tileset.MOUNTAIN);
+        addHexagon(world, x1 - 2*(2*s - 1),y1 - 4*s,s, Tileset.GRASS);
+        addHexagon(world, x1 - 2*(2*s - 1),y1 - 6*s,s, Tileset.GRASS);
+
+        // middle right 2
+        addHexagon(world, x1 + 2*(2*s - 1),y1 - 2*s,s, Tileset.FLOWER);
+        addHexagon(world, x1 + 2*(2*s - 1),y1 - 4*s,s, Tileset.TREE);
+        addHexagon(world, x1 + 2*(2*s - 1),y1 - 6*s,s, Tileset.SAND);
+
         // draws the world to the screen
         ter.renderFrame(world);
     }
 
-    private void addHexagon(TETile[][] world, int x, int size){
+    private static void addHexagon(TETile[][] world, int x, int y, int size, TETile icon){
         int xbegin = x;
-        int ybegin = HEIGHT - 1 - 2 * size;
-        for(int i = 0; i < size; i ++){
-            for(int j = 0; j < size; j++) {
-                world[xbegin - i ][ybegin + i] = Tileset.WALL;
+        int ybegin = y;
+        for(int h = ybegin; h < ybegin + size; h ++){
+            for(int w = xbegin - (h - ybegin); w < xbegin + size + (h - ybegin); w++) {
+                world[w][h] = icon;
+            }
+        }
+
+        for(int h = ybegin + size; h < ybegin + 2 * size; h ++){
+            for(int w = xbegin - (ybegin + 2*size - h - 1); w < xbegin + size + (ybegin + 2*size - h - 1);w++){
+                world[w][h] = icon;
             }
         }
     }
+
 
 }
