@@ -2,6 +2,7 @@ package byow.Core;
 
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
+import byow.TileEngine.Tileset;
 
 public class Engine {
     TERenderer ter = new TERenderer();
@@ -14,6 +15,7 @@ public class Engine {
      * including inputs from the main menu.
      */
     public void interactWithKeyboard() {
+
     }
 
     /**
@@ -46,7 +48,39 @@ public class Engine {
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
 
-        TETile[][] finalWorldFrame = null;
+        // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
+        ter.initialize(WIDTH, HEIGHT);
+
+        TETile[][] finalWorldFrame = new TETile[WIDTH][HEIGHT];
+        for (int x = 0; x < WIDTH; x += 1) {
+            for (int y = 0; y < HEIGHT; y += 1) {
+                finalWorldFrame[x][y] = Tileset.NOTHING;
+            }
+        }
+
+        int xbegin_room = 5, ybegin_room = 5, w_room = 5, h_room = 7;
+        int xbegin_room2 = 15, ybegin_room2 = 15, w_room2 = 6, h_room2 = 8;
+        int y_hallway = 6, x_hallway = 16, w_hallway = 2;
+
+        drawRec(finalWorldFrame, xbegin_room, ybegin_room, w_room, h_room, Tileset.WALL);
+        drawRec(finalWorldFrame, xbegin_room + 1, ybegin_room + 1, w_room-2, h_room-2, Tileset.GRASS);
+        drawRec(finalWorldFrame, xbegin_room2, ybegin_room2, w_room2, h_room2, Tileset.WALL);
+        drawRec(finalWorldFrame, xbegin_room2+1, ybegin_room2+1, w_room2-2, h_room2-2, Tileset.GRASS);
+
+        // hallway
+        drawRec(finalWorldFrame, xbegin_room+w_room-1, ybegin_room, w_room, h_room, Tileset.WALL);
+        
+
+        ter.renderFrame(finalWorldFrame);
+
         return finalWorldFrame;
+    }
+
+    private void drawRec(TETile[][] world, int x, int y, int w, int h, TETile icon){
+        for(int i = x ; i < x + w; i++){
+            for(int j = y; j < y + h; j++){
+                world[i][j] = icon;
+            }
+        }
     }
 }
