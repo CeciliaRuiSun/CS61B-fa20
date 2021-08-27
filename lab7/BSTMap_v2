@@ -1,0 +1,126 @@
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+public class BSTMap<K extends Comparable<K>,V> implements Map61B<K,V> {
+    private int size;
+    private Node root;
+
+    @Override
+    public Iterator<K> iterator() {
+        return null;
+    }
+
+    private class Node{
+        public K key;
+        public V value;
+        public Node left;
+        public Node right;
+
+        public Node(K k, V v){
+            key = k;
+            value = v;
+        }
+
+    }
+
+    public BSTMap(){
+
+    }
+
+    @Override
+    public void clear(){
+        size = 0;
+        if(root == null){
+            return;
+        }
+        root.key = null;
+        root.value = null;
+        root.left = null;
+        root.right = null;
+    }
+
+
+    @Override
+    public boolean containsKey(K key){
+        return containsKeyHelper(root, key);
+    }
+
+    private boolean containsKeyHelper(Node N, K key){
+        if(N == null || (N.key == null)){
+            return false;
+        }
+
+        if(N.key.equals(key)){
+            return true;
+        }
+
+        if(N.key.compareTo(key) > 0){
+            return containsKeyHelper(N.left,key);
+        } else{
+            return containsKeyHelper(N.right,key);
+        }
+
+    }
+
+    @Override
+    public V get(K key){
+        if(!containsKey(key)){
+            return null;
+        }
+
+        return getHelper(root, key);
+    }
+
+    private V getHelper(Node N,K key){
+        if(N.key.equals(key)){
+            return N.value;
+        } else if(N.key.compareTo(key) > 0){
+            return getHelper(N.left, key);
+        } else{
+            return getHelper(N.right,key);
+        }
+
+    }
+
+
+    @Override
+    public int size(){
+        return size;
+    }
+
+    @Override
+    public void put(K key, V value){
+        root = putHelper(root,key,value);
+        size ++;
+    }
+
+    private Node putHelper(Node N, K key, V value){
+        if(N == null){
+            return new Node(key, value);
+        }
+
+        if(N.key.compareTo(key) > 0){
+            return putHelper(N.left,key,value);
+        } else{
+            return putHelper(N.right,key,value);
+        }
+    }
+
+    @Override
+    public Set<K> keySet(){
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Override
+    public V remove(K key){
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Override
+    public V remove(K key, V value){
+        throw new UnsupportedOperationException();
+    }
+}
