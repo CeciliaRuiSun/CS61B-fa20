@@ -1,0 +1,151 @@
+import java.util.*;
+
+public class MyHashMap<K,V> implements Map61B<K,V>{
+    private int initialSize;
+    private double loadFactor;
+    private int multFactor = 2;
+    private int size = 0;
+    private List<Node>[] hm;
+    private Set<K> keys = new HashSet<>();
+
+    private class Node{
+        K key;
+        V value;
+
+        public Node(K k, V v){
+            key = k;
+            value = v;
+        }
+    }
+
+    public MyHashMap(){
+        this.initialSize = 16;
+        this.loadFactor = 0.75;
+        hm = (List<Node>[])new ArrayList[initialSize];
+    }
+    public MyHashMap(int initialSize){
+        this.initialSize = initialSize;
+        this.loadFactor = 0.75;
+        hm = (List<Node>[])new ArrayList[this.initialSize];
+    }
+
+    public MyHashMap(int initialSize, double loadFactor){
+        this.initialSize = initialSize;
+        this.loadFactor = loadFactor;
+        hm = (List<Node>[])new ArrayList[this.initialSize];
+    }
+
+    @Override
+    public void clear(){
+        for(int i = 0; i < hm.length; i ++){
+            hm[i] = null;
+        }
+        size = 0;
+    }
+
+    private int getLoc(K key){
+        return Math.floorMod(key.hashCode(), hm.length);
+    }
+
+    @Override
+    public boolean containsKey(K key){
+        List<Node> ls = hm[getLoc(key)];
+        if(ls!= null) {
+            for (Node n : ls) {
+                if (n.key.equals(key)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public V get(K key){
+        if(containsKey(key)) {
+            List<Node> ls = hm[getLoc(key)];
+            for (Node n : ls) {
+                if (n.key.equals(key)) {
+                    return n.value;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public int size(){
+        return size;
+    }
+
+    @Override
+    public void put(K key, V value){
+        if(!containsKey(key)){
+            if(this.size/hm.length > loadFactor) {
+                resize();
+            }
+
+            helperPut(key,value);
+
+            keys.add(key);
+            size ++;
+        } else{
+            update(key, value);
+        }
+    }
+
+    private void resize(){
+        // resize, re-put all nodes
+        List<Node>[] hmOld = hm;
+        hm = (List<Node>[]) new ArrayList[hm.length * multFactor];
+        for(int i = 0; i < hmOld.length; i++){
+            if(hmOld[i] != null){
+                for(Node n: hmOld[i]){
+                    helperPut(n.key,n.value);
+                }
+            }
+        }
+
+    }
+
+    private void helperPut(K key, V value){
+        List<Node> ls = hm[getLoc(key)];
+        if(ls == null){
+            ls = new ArrayList<Node>();
+            hm[getLoc(key)] = ls;
+        }
+        ls.add(new Node(key,value));
+    }
+
+    private void update(K key, V value){
+        List<Node> ls = hm[getLoc(key)];
+        for(Node n:ls){
+            if(n.key == key){
+                n.value = value;
+                break;
+            }
+        }
+    }
+
+    @Override
+    public Set<K> keySet(){
+        return keys;
+    }
+
+    @Override
+    public Iterator<K> iterator() {
+        return null;
+    }
+
+
+    @Override
+    public V remove(K key){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public V remove(K key, V value){
+        throw new UnsupportedOperationException();
+    }
+
+}
