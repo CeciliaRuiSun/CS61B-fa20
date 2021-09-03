@@ -1,0 +1,41 @@
+package bearmaps;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class NaivePointSet implements PointSet{
+    private List<Point> pointSet;
+
+    public NaivePointSet(List<Point> points){
+        pointSet = new ArrayList<Point>();
+        for(Point p: points){
+            pointSet.add(p);
+        }
+    }
+
+    @Override
+    public Point nearest(double x, double y){
+        double shortestDistance = Integer.MAX_VALUE;
+        Point ret = pointSet.get(0);
+        Point goal = new Point(x,y);
+        for(Point p: pointSet){
+            double distance = Point.distance(p,goal);
+            if(distance < shortestDistance){
+                shortestDistance = distance;
+                ret = p;
+            }
+        }
+        return ret;
+    }
+
+    public void main(String args[]){
+        Point p1 = new Point(1.1, 2.2); // constructs a Point with x = 1.1, y = 2.2
+        Point p2 = new Point(3.3, 4.4);
+        Point p3 = new Point(-2.9, 4.2);
+
+        NaivePointSet nn = new NaivePointSet(List.of(p1, p2, p3));
+        Point ret = nn.nearest(3.0, 4.0); // returns p2
+        System.out.println(ret.getX()); // evaluates to 3.3
+        System.out.println(ret.getY());
+    }
+}
